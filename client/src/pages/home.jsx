@@ -24,7 +24,7 @@ export default function Home(){
     }, [])
 
     return (
-        <div className="bg-gray-200 h-screen px-10 py-5 grid grid-cols-4">
+        <div className="bg-gray-200 h-screen px-20 py-5 grid grid-cols-4">
             <div className='col-span-2'>
                 {context.workouts && context.workouts.map(workout => {
                     return(

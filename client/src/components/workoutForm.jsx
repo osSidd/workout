@@ -1,4 +1,6 @@
-import {useState , useEffect} from 'react'
+import {useState ,useContext,  useEffect} from 'react'
+import { WorkoutsContext } from '../App'
+
 
 export default function WorkoutForm(){
 
@@ -8,7 +10,10 @@ export default function WorkoutForm(){
         reps: '',
     })
 
+    const context = useContext(WorkoutsContext)
+
     const [error, setError] = useState(null)
+    const [empty, setEmpty] = useState([])
 
     function handleChange(e){
         const {name, value} = e.target
@@ -30,10 +35,11 @@ export default function WorkoutForm(){
         })
 
         const json = await response.json()
-
-        if(!response.ok)
+        console.log(json)
+        if(!response.ok){
             setError(json.error)
-        
+            setEmpty(json.empty)
+        }
         if(response.ok){
             setFormData({
                 title: '',
@@ -42,38 +48,43 @@ export default function WorkoutForm(){
             })
             setError(null)
             console.log(json)
+            context.dispatch({
+                type: 'CREATE_WORKOUT',
+                payload: json,
+            })
+            setEmpty([])
         }
     }
     return (
         <form className='font-bold' onSubmit={submitForm}>
             <label htmlFor="title">Exercise Title:</label>
-            <input
-                className= "block w-full p-1 my-2" 
+            <input 
                 type="text" 
                 id="title"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                className = {empty.includes('title') ? 'border-2 border-red-400 block w-full p-1 my-2': 'block w-full p-1 my-2'}
             />
 
             <label htmlFor="reps">Reps:</label>
             <input
-                className= "block w-full p-1 my-2" 
                 type="text" 
                 id="reps"
                 name="reps"
                 value={formData.reps}
                 onChange={handleChange}
+                className = {empty.includes('reps') ? 'border-2 border-red-400 block w-full p-1 my-2': 'block w-full p-1 my-2'}
             />
 
             <label htmlFor="load">Load (kg):</label>
             <input 
-                className= "block w-full p-1 my-2"
                 type="number" 
                 id="load"
                 name="load"
                 value={formData.load}
                 onChange={handleChange}
+                className = {empty.includes('load') ? 'border-2 border-red-400 block w-full p-1 my-2': 'block w-full p-1 my-2'}
             />
 
             <button className="bg-teal-600 rounded cursor-pointer hover:bg-teal-800 text-white py-2 px-5 my-5 border-none" type='submit'>Add workout</button>
